@@ -839,8 +839,25 @@ void PCMMusicPlayer::restoreThatTune(void *voidPtr) {
 void PCMMusicPlayer::setMusicSceneDetails(SCNHANDLE hScript,
 		SCNHANDLE hSegment, const char *fileName) {
 
+	debug("====== in setMusicSceneDetails ======");
+
+#if 0 // Enable this to activate the fix
+	// The audio thread will acquire locks (via Audio::MixerImpl::mixCallback) in the following order:
+	// 1. Audio::MixerImpl::_mutex
+	// 2. Tinsel::PCMMusicPlayer::_mutex
+	// A call to setVol() at the end of this method will lock Audio::MixerImpl::_mutex (via _vm->_mixer->setChannelVolume),
+	// so we preemptively lock it here first to prevent a potential deadlock due to locking order.
+	// See bug #13953
+	debug("Deadlock fix enabled");
+	Common::StackLock mixerLock(_vm->_mixer->mutex());
+#endif
 	Common::StackLock lock(_mutex);
 
+	debug("Lock acquired: Tinsel::PCMMusicPlayer::_mutex");
+#if 1 // Try to trigger deadlock
+	debug("Sleeping...");
+	g_system->delayMillis(1000);
+#endif
 	stop();
 
 	debugC(DEBUG_INTERMEDIATE, kTinselDebugMusic, "Setting music scene details: %s", fileName);
@@ -853,7 +870,9 @@ void PCMMusicPlayer::setMusicSceneDetails(SCNHANDLE hScript,
 	_dimmed = false;
 	_dimmedTinsel = false;
 	_dimIteration = 0;
+	debug("Calling setVol...");
 	setVol(255);
+	debug("Returned from setVol.");
 }
 
 void PCMMusicPlayer::setVolume(int volume) {
