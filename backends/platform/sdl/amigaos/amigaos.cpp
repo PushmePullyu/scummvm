@@ -27,6 +27,22 @@
 #include "backends/fs/amigaos/amigaos-fs-factory.h"
 #include "backends/dialogs/amigaos/amigaos-dialogs.h"
 
+static bool cleanupDone = false;
+
+static void cleanup() {
+	if (!cleanupDone)
+		g_system->destroy();
+}
+
+OSystem_AmigaOS::OSystem_AmigaOS() {
+	// Register cleanup function to avoid unfreed signals
+	atexit(cleanup);
+}
+
+OSystem_AmigaOS::~OSystem_AmigaOS() {
+	cleanupDone = true;
+}
+
 void OSystem_AmigaOS::init() {
 	// Initialze File System Factory
 	_fsFactory = new AmigaOSFilesystemFactory();
