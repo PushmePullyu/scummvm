@@ -19,6 +19,9 @@
  *
  */
 
+#define FORBIDDEN_SYMBOL_EXCEPTION_fprintf
+#define FORBIDDEN_SYMBOL_EXCEPTION_stderr
+
 #include "common/scummsys.h"
 
 #if defined(__amigaos4__)
@@ -74,8 +77,10 @@ int main(int argc, char *argv[]) {
 	int res = scummvm_main(argc, argv);
 
 	// Free OSystem.
+	fprintf(stderr, "main(): calling destroy.\n");
 	g_system->destroy();
 
+	fprintf(stderr, "main(): returning %i.\n", res);
 	return res;
 }
 

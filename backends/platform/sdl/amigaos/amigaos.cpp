@@ -19,6 +19,10 @@
  *
  */
 
+#define FORBIDDEN_SYMBOL_EXCEPTION_fprintf
+#define FORBIDDEN_SYMBOL_EXCEPTION_stderr
+#define FORBIDDEN_SYMBOL_EXCEPTION_exit
+
 #include "common/scummsys.h"
 
 #ifdef __amigaos4__
@@ -30,16 +34,32 @@
 static bool cleanupDone = false;
 
 static void cleanup() {
-	if (!cleanupDone)
+	fprintf(stderr, "in cleanup().\n");
+	fprintf(stderr, "cleanup(): cleanupDone is ");
+	if (!cleanupDone) {
+		fprintf(stderr, "false. calling destroy().\n");
 		g_system->destroy();
+	} else
+		fprintf(stderr, "true. skipping cleanup.\n");
 }
 
 OSystem_AmigaOS::OSystem_AmigaOS() {
+	fprintf(stderr, "in OSystem_AmigaOS().\n");
+	fprintf(stderr, "OSystem_AmigaOS(): registering cleanup(): ");
+
 	// Register cleanup function to avoid unfreed signals
-	atexit(cleanup);
+	int ret = atexit(cleanup);
+
+	if (ret) {
+		fprintf(stderr, "failure!\n");
+		exit(1);
+	} else
+		fprintf(stderr, "success.\n");
 }
 
 OSystem_AmigaOS::~OSystem_AmigaOS() {
+	fprintf(stderr, "in ~OSystem_AmigaOS().\n");
+	fprintf(stderr, "~OSystem_AmigaOS(): changing cleanupDone from %s to true.\n", cleanupDone ? "true" : "false");
 	cleanupDone = true;
 }
 
