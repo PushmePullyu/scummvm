@@ -27,6 +27,17 @@
 #include "backends/fs/amigaos/amigaos-fs-factory.h"
 #include "backends/dialogs/amigaos/amigaos-dialogs.h"
 
+static bool cleanupDone = false;
+
+static void cleanup() {
+	if (!cleanupDone)
+		g_system->destroy();
+}
+
+OSystem_AmigaOS::~OSystem_AmigaOS() {
+	cleanupDone = true;
+}
+
 void OSystem_AmigaOS::init() {
 	// Initialize File System Factory
 	_fsFactory = new AmigaOSFilesystemFactory();
@@ -37,6 +48,11 @@ void OSystem_AmigaOS::init() {
 #if defined(USE_SYSDIALOGS)
 	_dialogManager = new AmigaOSDialogManager();
 #endif
+
+	// Register cleanup function to avoid unfreed signals
+	int ret = atexit(cleanup);
+	if (ret)
+		warning("Failed to register cleanup function via atexit()");
 }
 
 bool OSystem_AmigaOS::hasFeature(Feature f) {
