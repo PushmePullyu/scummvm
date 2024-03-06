@@ -28,6 +28,8 @@
 #include "common/textconsole.h"
 #include "common/translation.h"
 
+#include "common/exit.h"
+
 #ifdef USE_DISCORD
 #include "backends/presence/discord/discord.h"
 #endif
@@ -562,12 +564,12 @@ void *OSystem_SDL::getOpenGLProcAddress(const char *name) const {
 
 void OSystem_SDL::quit() {
 	destroy();
-	exit(0);
+	Common::scummvmExit(0);
 }
 
 void OSystem_SDL::fatalError() {
 	destroy();
-	exit(1);
+	Common::scummvmExit(1);
 }
 
 Common::KeymapArray OSystem_SDL::getGlobalKeymaps() {
