@@ -19,11 +19,11 @@
  *
  */
 
-#define FORBIDDEN_SYMBOL_EXCEPTION_exit
-
 #include "common/textconsole.h"
 #include "common/system.h"
 #include "common/str.h"
+
+#include "common/exit.h"
 
 namespace Common {
 
@@ -109,6 +109,6 @@ void NORETURN_PRE error(const char *s, ...) {
 	// FIXME
 	for (;;) {}
 #else
-	exit(1);
+	Common::scummvmExit(1);
 #endif
 }
