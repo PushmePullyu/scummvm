@@ -22,7 +22,6 @@
 // FIXME: Avoid using printf
 #define FORBIDDEN_SYMBOL_EXCEPTION_printf
 
-#define FORBIDDEN_SYMBOL_EXCEPTION_exit
 
 #include "engines/advancedDetector.h"
 #include "engines/metaengine.h"
@@ -45,6 +44,8 @@
 #include "audio/musicplugin.h"
 
 #include "graphics/renderer.h"
+
+#include "common/exit.h"
 
 #define DETECTOR_TESTING_HACK
 #define UPGRADE_ALL_TARGETS_HACK
@@ -271,7 +272,7 @@ static void usage(const char *s, ...) {
 
 	printf(USAGE_STRING, s_appName, buf, s_appName, s_appName);
 #endif
-	exit(1);
+	Common::scummvmExit(1);
 }
 
 static void ensureFirstCommand(const Common::String &existingCommand, const char *newCommand) {
