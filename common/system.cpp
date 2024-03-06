@@ -97,6 +97,8 @@ OSystem::~OSystem() {
 
 	delete _dlcStore;
 	_dlcStore = nullptr;
+
+	g_system = nullptr;
 }
 
 void OSystem::initBackend() {
