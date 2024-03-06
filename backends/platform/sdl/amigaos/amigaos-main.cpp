@@ -19,6 +19,7 @@
  *
  */
 
+#define FORBIDDEN_SYMBOL_EXCEPTION_exit
 #include "common/scummsys.h"
 
 #if defined(__amigaos4__)
@@ -27,6 +28,16 @@
 #include "backends/platform/sdl/amigaos/amigaos.h"
 #include "backends/plugins/sdl/sdl-provider.h"
 #include "base/main.h"
+
+#include "common/exit.h"
+
+// Exit func implementation for scummvmExit.
+NORETURN_PRE static void amigaosExit(int rc) NORETURN_POST {
+	// Clean up to prevent unfreed signals.
+	if (g_system)
+		g_system->destroy();
+	exit(rc);
+}
 
 int main(int argc, char *argv[]) {
 
@@ -58,6 +69,9 @@ int main(int argc, char *argv[]) {
 
 	// Set a stack cookie to avoid crashes from a too low stack.
 	static const char *stack_cookie __attribute__((used)) = "$STACK: 2048000";
+
+	// Override exit func so we can do cleanup.
+	Common::overrideScummvmExitFunc(amigaosExit);
 
 	// Create our OSystem instance.
 	g_system = new OSystem_AmigaOS();
