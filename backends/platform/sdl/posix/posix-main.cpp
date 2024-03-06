@@ -19,6 +19,7 @@
  *
  */
 
+#define FORBIDDEN_SYMBOL_EXCEPTION_exit
 #include "common/scummsys.h"
 
 #if defined(POSIX) && !defined(MACOSX) && !defined(SAMSUNGTV) && !defined(MAEMO) && !defined(GPH_DEVICE) && !defined(GP2X) && !defined(DINGUX) && !defined(OPENPANDORA) && !defined(PLAYSTATION3) && !defined(PSP2) && !defined(NINTENDO_SWITCH)  && !defined(__EMSCRIPTEN__) && !defined(MIYOO) && !defined(MIYOOMINI)
@@ -26,8 +27,20 @@
 #include "backends/platform/sdl/posix/posix.h"
 #include "backends/plugins/sdl/sdl-provider.h"
 #include "base/main.h"
+#include "common/exit.h"
+
+NORETURN_PRE static void posixExit(int rc) NORETURN_POST {
+	// Cleanup
+	if (g_system)
+		g_system->destroy();
+
+	exit(rc);
+}
 
 int main(int argc, char *argv[]) {
+
+	// Override exit func so we can do cleanup
+	Common::overrideScummvmExitFunc(posixExit);
 
 	// Create our OSystem instance
 	g_system = new OSystem_POSIX();
