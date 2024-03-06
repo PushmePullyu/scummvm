@@ -9,6 +9,7 @@ MODULE_OBJS := \
 	debug.o \
 	error.o \
 	events.o \
+	exit.o \
 	file.o \
 	fs.o \
 	gui_options.o \
