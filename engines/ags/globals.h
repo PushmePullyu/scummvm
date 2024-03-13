@@ -909,6 +909,9 @@ public:
 
 	/**@}*/
 
+	// FIXME: DOXYGEN comment
+	ScriptPosition *_last_cutscene_script_pos;
+
 	/**
 	 * @defgroup agsglobal_objectglobals global_object globals
 	 * @ingroup agsglobals
